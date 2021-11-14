@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Sqlite;
 
 namespace MedicalCard
 {
@@ -20,9 +22,13 @@ namespace MedicalCard
     /// </summary>
     public partial class MainWindow : Window
     {
+        ApplicationContext db;
+
         public MainWindow()
         {
             InitializeComponent();
+            
+            db = new ApplicationContext();
         }
     }
 }
