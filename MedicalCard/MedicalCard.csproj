@@ -5,12 +5,16 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Images\AddIcon.png" />
+    <None Remove="Images\DeleteIcon.png" />
     <None Remove="Images\EditIcon.png" />
     <None Remove="Images\Logo.png" />
+    <None Remove="Images\PrintIcon.png" />
+    <None Remove="Images\ReloadIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,10 +33,13 @@
 
   <ItemGroup>
     <Resource Include="Images\AddIcon.png" />
+    <Resource Include="Images\DeleteIcon.png" />
     <Resource Include="Images\EditIcon.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Logo.png" />
+    <Resource Include="Images\PrintIcon.png" />
+    <Resource Include="Images\ReloadIcon.png" />
   </ItemGroup>
 
 </Project>

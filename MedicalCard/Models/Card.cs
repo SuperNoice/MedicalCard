@@ -7,12 +7,13 @@ namespace MedicalCard.Models
     {
         private int? _id;
         private string? _fio;
-        private string? _sex;
+        private int? _sex = 0;
         private string? _birthDay;
         private string? _address;
         private string? _phone;
-        private string? _countryType;
+        private int? _countryType = 0;
         private string? _passport;
+        private string? _dateReg;
 
         public int? Id
         {
@@ -36,7 +37,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public string? Sex
+        public int? Sex
         {
             get => _sex;
 
@@ -80,7 +81,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public string? CountryType
+        public int? CountryType
         {
             get => _countryType;
 
@@ -99,6 +100,17 @@ namespace MedicalCard.Models
             {
                 _passport = value;
                 OnPropetryChanged(nameof(Passport));
+            }
+        }
+
+        public string? DateReg
+        {
+            get => _dateReg;
+
+            set
+            {
+                _dateReg = value;
+                OnPropetryChanged(nameof(DateReg));
             }
         }
 

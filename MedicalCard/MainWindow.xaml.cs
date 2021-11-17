@@ -26,7 +26,7 @@ namespace MedicalCard
         public MainWindow()
         {
             InitializeComponent();
-
+            
             DataContext = new ApplicationViewModel();
         }
     }

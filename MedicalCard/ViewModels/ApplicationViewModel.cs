@@ -15,18 +15,52 @@ using MedicalCard.Models;
 using MedicalCard.Animations;
 using System.Windows.Threading;
 using System.Threading;
+using MedicalCard.Commands;
 
 namespace MedicalCard.ViewModels
 {
     public class ApplicationViewModel : INotifyPropertyChanged
     {
         private ApplicationContext db;
-        private GridAnimation _savingCardMenuAnimation;
-        private GridAnimation _cardMenuAnimation;
-        private Card _selectedCard;
+        private GridAnimationManager _savingMenuAnimation;
+        private GridAnimationManager _cardMenuAnimation;
 
         public ObservableCollection<Card> Cards { get; set; }
 
+        public ApplicationViewModel()
+        {
+            _menuWidth = new GridLength(0.0, GridUnitType.Star);
+            _saveMenuHeight = new GridLength(0.0, GridUnitType.Pixel);
+
+            _savingMenuAnimation = new GridAnimationManager(this, ref _saveMenuHeight, nameof(MenuWidth), 0, 60, 100, 120);
+            _cardMenuAnimation = new GridAnimationManager(this, ref _menuWidth, nameof(MenuWidth), 0.0, 0.3, 100, 120);
+
+            
+            _editing = false;
+            db = new ApplicationContext();
+
+            db.Cards?.Load();
+            //Cards = db.Cards?.Local.ToObservableCollection() ?? new ObservableCollection<Card>();
+            Cards = new ObservableCollection<Card>();
+            
+            Cards.Add(new Card()
+            {
+                Fio = "Лозовик Леонид Евгеньевич",
+                Phone = "+7(999)632-68-75",
+                BirthDay = "14.02.2001",
+                Passport = "1720 814484 Зарегестрирован в Мвд россии по республике адыгея"
+            });
+            Cards.Add(new Card()
+            {
+                Fio = "YaЛозовик Леонид Евгеньевич",
+                Phone = "+7(999)632-68-75",
+                BirthDay = "14.02.2001",
+                Passport = "1720 814484 Зарегестрирован в Мвд россии по республике адыгея"
+            });
+
+        }
+
+        private Card _selectedCard;
         public Card SelectedCard
         {
             get => _selectedCard;
@@ -36,9 +70,9 @@ namespace MedicalCard.ViewModels
                 _selectedCard = value;
                 Task.Factory.StartNew(() =>
                 {
-                    _cardMenuAnimation.Animation(ref _menuWidth, nameof(MenuWidth), 0.0, 100, 120);
+                    _cardMenuAnimation.Close(ref _menuWidth);
                     OnPropetryChanged(nameof(SelectedCard));
-                    _cardMenuAnimation.Animation(ref _menuWidth, nameof(MenuWidth), 0.3, 100, 120);
+                    _cardMenuAnimation.Open(ref _menuWidth);
                 });
 
             }
@@ -55,43 +89,135 @@ namespace MedicalCard.ViewModels
             }
         }
 
-        private GridLength _saveMenuWidth;
-        public GridLength SaveMenuWidth
+        private GridLength _saveMenuHeight;
+        public GridLength SaveMenuHeight
         {
-            get { return _saveMenuWidth; }
+            get { return _saveMenuHeight; }
             set
             {
-                _saveMenuWidth = value;
-                OnPropetryChanged(nameof(SaveMenuWidth));
+                _saveMenuHeight = value;
+                OnPropetryChanged(nameof(SaveMenuHeight));
             }
         }
 
-        public ApplicationViewModel()
+        private bool _editing;
+        public bool IsEditing
         {
-            _menuWidth = new GridLength(0.0, GridUnitType.Star);
-            _savingCardMenuAnimation = new GridAnimation(this);
-            _cardMenuAnimation = new GridAnimation(this);
-            db = new ApplicationContext();
-
-            db.Cards?.Load();
-            //Cards = db.Cards?.Local.ToObservableCollection() ?? new ObservableCollection<Card>();
-            Cards = new ObservableCollection<Card>();
-
-            Cards.Add(new Card()
+            get => _editing;
+            set
             {
-                Fio = "Лозовик Леонид Евгеньевич",
-                Phone = "+7(999)632-68-75",
-                BirthDay = "14.02.2001",
-                Passport = "1720 814484 Зарегестрирован в Мвд россии по республике адыгея"
-            });
-            Cards.Add(new Card()
-            {
-                Fio = "YaЛозовик Леонид Евгеньевич",
-                Phone = "+7(999)632-68-75",
-                BirthDay = "14.02.2001",
-                Passport = "1720 814484 Зарегестрирован в Мвд россии по республике адыгея"
-            });
+                _editing = value;
+                Task.Factory.StartNew(() =>
+                {
+                    if (_editing == true)
+                    {
+                        _savingMenuAnimation.Open(ref _saveMenuHeight);
+                    }
+                    else
+                    {
+                        _savingMenuAnimation.Close(ref _saveMenuHeight);
+                    }
 
+                    OnPropetryChanged(nameof(IsEditing));
+                    OnPropetryChanged(nameof(NotIsEditing));
+                });
+            }
+        }
+
+        public bool NotIsEditing
+        {
+            get => !_editing;
+        }
+
+        private RelayCommand _updCommand;
+        public RelayCommand UpdateCommand
+        {
+            get
+            {
+                return _updCommand ??
+                    (_updCommand = new RelayCommand(obj =>
+                    {
+
+                    }));
+            }
+        }
+
+        private RelayCommand _printCommand;
+        public RelayCommand PrintCommand
+        {
+            get
+            {
+                return _printCommand ??
+                    (_printCommand = new RelayCommand(obj =>
+                    {
+
+                    }));
+            }
+        }
+
+        private RelayCommand _addCommand;
+        public RelayCommand AddCommand
+        {
+            get
+            {
+                return _addCommand ??
+                    (_addCommand = new RelayCommand(obj =>
+                    {
+
+                    }));
+            }
+        }
+
+        private RelayCommand _editCommand;
+        public RelayCommand EditCommand
+        {
+            get
+            {
+                return _editCommand ??
+                    (_editCommand = new RelayCommand(obj =>
+                    {
+                        IsEditing = true;
+                    }));
+            }
+        }
+
+        private RelayCommand _deleteCommand;
+        public RelayCommand DeleteCommand
+        {
+            get
+            {
+                return _deleteCommand ??
+                    (_deleteCommand = new RelayCommand(obj =>
+                    {
+
+                    }));
+            }
+        }
+
+        private RelayCommand _saveCommand;
+        public RelayCommand SaveCommand
+        {
+            get
+            {
+                return _saveCommand ??
+                    (_saveCommand = new RelayCommand(obj =>
+                    {
+
+                    }));
+            }
+        }
+
+        private RelayCommand _cancelCommand;
+        public RelayCommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ??
+                    (_cancelCommand = new RelayCommand(obj =>
+                    {
+
+                    }));
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -12,13 +12,13 @@ namespace MedicalCard.Animations
     public class GridAnimation
     {
         ApplicationViewModel _propertyOwner;
-
+        
         public GridAnimation(ApplicationViewModel vm)
         {
             _propertyOwner = vm;
         }
 
-        public void Animation(ref GridLength propertyVar, string propertyName, double endLength, int time, int fps)
+        public void Animate(ref GridLength propertyVar, string propertyName, double endLength, int time, int fps)
         {
             int sleepTime = 1000 / fps;
 
