@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
+using MedicalCard.ViewModels;
 
 namespace MedicalCard
 {
@@ -22,13 +23,11 @@ namespace MedicalCard
     /// </summary>
     public partial class MainWindow : Window
     {
-        ApplicationContext db;
-
         public MainWindow()
         {
             InitializeComponent();
-            
-            db = new ApplicationContext();
+
+            DataContext = new ApplicationViewModel();
         }
     }
 }
