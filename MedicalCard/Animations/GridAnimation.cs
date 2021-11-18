@@ -40,6 +40,7 @@ namespace MedicalCard.Animations
             }
 
             propertyVar.Length = new GridLength(endLength, propertyVar.GridUnitType);
+            _propertyOwner.OnPropetryChanged(propertyName);
         }
     }
 }
