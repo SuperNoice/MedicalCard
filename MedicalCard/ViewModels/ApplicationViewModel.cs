@@ -24,19 +24,21 @@ namespace MedicalCard.ViewModels
         private ApplicationContext db;
         private GridAnimationManager _savingMenuAnimation;
         private GridAnimationManager _cardMenuAnimation;
+        private bool _isCreatingCard;
 
         public ObservableCollection<Card> Cards { get; set; }
 
         public ApplicationViewModel()
         {
-            _menuWidth = new GridLength(0.0, GridUnitType.Star);
+            _cardMenuWidth = new GridLength(0.0, GridUnitType.Star);
             _saveMenuHeight = new GridLength(0.0, GridUnitType.Pixel);
 
-            _savingMenuAnimation = new GridAnimationManager(this, ref _saveMenuHeight, nameof(MenuWidth), 0, 60, 100, 120);
-            _cardMenuAnimation = new GridAnimationManager(this, ref _menuWidth, nameof(MenuWidth), 0.0, 0.3, 100, 120);
+            _savingMenuAnimation = new GridAnimationManager(this, ref _saveMenuHeight, nameof(CardMenuWidth), 0, 60, 100, 120);
+            _cardMenuAnimation = new GridAnimationManager(this, ref _cardMenuWidth, nameof(CardMenuWidth), 0.0, 0.3, 100, 120);
 
-            
             _editing = false;
+            _isCreatingCard = false;
+            
             db = new ApplicationContext();
 
             db.Cards?.Load();
@@ -70,22 +72,22 @@ namespace MedicalCard.ViewModels
                 _selectedCard = value;
                 Task.Factory.StartNew(() =>
                 {
-                    _cardMenuAnimation.Close(ref _menuWidth);
+                    _cardMenuAnimation.Close(ref _cardMenuWidth);
                     OnPropetryChanged(nameof(SelectedCard));
-                    _cardMenuAnimation.Open(ref _menuWidth);
+                    _cardMenuAnimation.Open(ref _cardMenuWidth);
                 });
 
             }
         }
 
-        private GridLength _menuWidth;
-        public GridLength MenuWidth
+        private GridLength _cardMenuWidth;
+        public GridLength CardMenuWidth
         {
-            get { return _menuWidth; }
+            get { return _cardMenuWidth; }
             set
             {
-                _menuWidth = value;
-                OnPropetryChanged(nameof(MenuWidth));
+                _cardMenuWidth = value;
+                OnPropetryChanged(nameof(CardMenuWidth));
             }
         }
 

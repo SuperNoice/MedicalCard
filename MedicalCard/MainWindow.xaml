@@ -21,14 +21,14 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.7*">
             </ColumnDefinition>
-            <ColumnDefinition x:Name="CardMenuColumn" Width="{Binding MenuWidth}"></ColumnDefinition>
+            <ColumnDefinition x:Name="CardMenuColumn" Width="{Binding CardMenuWidth}"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Column="0">
+        <Grid Grid.Column="0" IsEnabled="{Binding NotIsEditing}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
@@ -74,7 +74,7 @@
 
             </Grid>
 
-            <ListView Grid.Row="1" ItemsSource="{Binding Cards}" SelectedItem="{Binding SelectedCard}">
+            <ListView Grid.Row="1" ItemsSource="{Binding Cards}" SelectedItem="{Binding SelectedCard}" IsEnabled="{Binding NotIsEditing}">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="FontSize" Value="16pt"/>
@@ -174,7 +174,7 @@
                 </Grid>
             </ScrollViewer>
 
-            <Button Grid.Row="2" Command="{Binding PrintCommand}" Content="{StaticResource PrintIcon}" Margin="0,0,0,20" Background="#f0eeea" HorizontalAlignment="Center"></Button>
+            <Button Grid.Row="2" Command="{Binding PrintCommand}" Content="{StaticResource PrintIcon}" IsEnabled="{Binding NotIsEditing}" Margin="0,0,0,20" Background="#f0eeea" HorizontalAlignment="Center"></Button>
             
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
