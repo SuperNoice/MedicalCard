@@ -30,21 +30,21 @@ namespace MedicalCard.ViewModels
 
         public ApplicationViewModel()
         {
-            _cardMenuWidth = new GridLength(0.0, GridUnitType.Star);
-            _saveMenuHeight = new GridLength(0.0, GridUnitType.Pixel);
+            _cardMenuWidth = new GridLengthContainer(0.0, GridUnitType.Star);
+            _saveMenuHeight = new GridLengthContainer(0.0, GridUnitType.Pixel);
 
-            _savingMenuAnimation = new GridAnimationManager(this, ref _saveMenuHeight, nameof(CardMenuWidth), 0, 60, 100, 120);
-            _cardMenuAnimation = new GridAnimationManager(this, ref _cardMenuWidth, nameof(CardMenuWidth), 0.0, 0.3, 100, 120);
+            _savingMenuAnimation = new GridAnimationManager(this, _saveMenuHeight, nameof(SaveMenuHeight), 0, 60, 100, 120);
+            _cardMenuAnimation = new GridAnimationManager(this, _cardMenuWidth, nameof(CardMenuWidth), 0.0, 0.3, 100, 120);
 
             _editing = false;
             _isCreatingCard = false;
-            
+
             db = new ApplicationContext();
 
             db.Cards?.Load();
             //Cards = db.Cards?.Local.ToObservableCollection() ?? new ObservableCollection<Card>();
             Cards = new ObservableCollection<Card>();
-            
+
             Cards.Add(new Card()
             {
                 Fio = "Лозовик Леонид Евгеньевич",
@@ -72,32 +72,32 @@ namespace MedicalCard.ViewModels
                 _selectedCard = value;
                 Task.Factory.StartNew(() =>
                 {
-                    _cardMenuAnimation.Close(ref _cardMenuWidth);
+                    _cardMenuAnimation.Close();
                     OnPropetryChanged(nameof(SelectedCard));
-                    _cardMenuAnimation.Open(ref _cardMenuWidth);
+                    _cardMenuAnimation.Open();
                 });
 
             }
         }
 
-        private GridLength _cardMenuWidth;
+        private GridLengthContainer _cardMenuWidth;
         public GridLength CardMenuWidth
         {
-            get { return _cardMenuWidth; }
+            get { return _cardMenuWidth.Length; }
             set
             {
-                _cardMenuWidth = value;
+                _cardMenuWidth.Length = value;
                 OnPropetryChanged(nameof(CardMenuWidth));
             }
         }
 
-        private GridLength _saveMenuHeight;
+        private GridLengthContainer _saveMenuHeight;
         public GridLength SaveMenuHeight
         {
-            get { return _saveMenuHeight; }
+            get { return _saveMenuHeight.Length; }
             set
             {
-                _saveMenuHeight = value;
+                _saveMenuHeight.Length = value;
                 OnPropetryChanged(nameof(SaveMenuHeight));
             }
         }
@@ -113,11 +113,11 @@ namespace MedicalCard.ViewModels
                 {
                     if (_editing == true)
                     {
-                        _savingMenuAnimation.Open(ref _saveMenuHeight);
+                        _savingMenuAnimation.Open();
                     }
                     else
                     {
-                        _savingMenuAnimation.Close(ref _saveMenuHeight);
+                        _savingMenuAnimation.Close();
                     }
 
                     OnPropetryChanged(nameof(IsEditing));

@@ -29,7 +29,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public GridUnitType Type
+        public GridUnitType GridUnitType
         {
             get => _gridLength.GridUnitType;
             set

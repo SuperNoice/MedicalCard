@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using MedicalCard.Models;
 using MedicalCard.ViewModels;
 
 namespace MedicalCard.Animations
@@ -12,13 +13,13 @@ namespace MedicalCard.Animations
     public class GridAnimation
     {
         ApplicationViewModel _propertyOwner;
-        
+
         public GridAnimation(ApplicationViewModel vm)
         {
             _propertyOwner = vm;
         }
 
-        public void Animate(ref GridLength propertyVar, string propertyName, double endLength, int time, int fps)
+        public void Animate(GridLengthContainer propertyVar, string propertyName, double endLength, int time, int fps)
         {
             int sleepTime = 1000 / fps;
 
@@ -30,7 +31,7 @@ namespace MedicalCard.Animations
                 width = new GridLength(propertyVar.Value + step, propertyVar.GridUnitType);
                 if (width.Value >= 0)
                 {
-                    propertyVar = width;
+                    propertyVar.Length = width;
                     _propertyOwner.OnPropetryChanged(propertyName);
                 }
 
@@ -38,7 +39,7 @@ namespace MedicalCard.Animations
                 Thread.Sleep(sleepTime);
             }
 
-            propertyVar = new GridLength(endLength, propertyVar.GridUnitType);
+            propertyVar.Length = new GridLength(endLength, propertyVar.GridUnitType);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using MedicalCard.Models;
 using MedicalCard.ViewModels;
 
 namespace MedicalCard.Animations
@@ -17,6 +18,7 @@ namespace MedicalCard.Animations
     {
         private GridAnimation _animation;
         private ApplicationViewModel _propertyOwner;
+        private GridLengthContainer _propertyVar;
         string _propertyName;
         double _minLength;
         double _maxLength;
@@ -24,9 +26,10 @@ namespace MedicalCard.Animations
         int _fps;
         MenuState _menuState;
 
-        public GridAnimationManager(ApplicationViewModel vm, ref GridLength propertyVar, string propertyName, double minLength, double maxLength, int time, int fps)
+        public GridAnimationManager(ApplicationViewModel vm, GridLengthContainer propertyVar, string propertyName, double minLength, double maxLength, int time, int fps)
         {
             _propertyOwner = vm;
+            _propertyVar = propertyVar;
             _animation = new GridAnimation(vm);
             _minLength = minLength;
             _maxLength = maxLength;
@@ -35,26 +38,26 @@ namespace MedicalCard.Animations
             _menuState = (propertyVar.Value == 0) ? MenuState.Close : MenuState.Open;
         }
 
-        public void Open(ref GridLength propertyVar)
+        public void Open()
         {
             if (_menuState == MenuState.Open)
             {
                 return;
             }
 
-            _animation.Animate(ref propertyVar, _propertyName, _maxLength, _time, _fps);
+            _animation.Animate(_propertyVar, _propertyName, _maxLength, _time, _fps);
 
             _menuState = MenuState.Open;
         }
 
-        public void Close(ref GridLength propertyVar)
+        public void Close()
         {
             if (_menuState == MenuState.Close)
             {
                 return;
             }
 
-            _animation.Animate(ref propertyVar, _propertyName, _minLength, _time, _fps);
+            _animation.Animate(_propertyVar, _propertyName, _minLength, _time, _fps);
 
             _menuState = MenuState.Close;
         }
