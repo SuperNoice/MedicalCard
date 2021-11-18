@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using MedicalCard.ViewModels;
+using Xceed.Wpf.Toolkit;
 
 namespace MedicalCard
 {

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MedicalCard.Models"
-        xmlns:viewmodels="clr-namespace:MedicalCard.ViewModels" 
+        xmlns:viewmodels="clr-namespace:MedicalCard.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:ApplicationViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="150" MinWidth="900" Height="600" Width="1200">
@@ -74,7 +74,7 @@
 
             </Grid>
 
-            <ListView Grid.Row="1" ItemsSource="{Binding Cards}" SelectedItem="{Binding SelectedCard}" IsEnabled="{Binding NotIsEditing}">
+            <ListView  Grid.Row="1" ItemsSource="{Binding Cards}" SelectedItem="{Binding SelectedCard}" IsEnabled="{Binding NotIsEditing}">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="FontSize" Value="16pt"/>
@@ -117,8 +117,8 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Viewbox Grid.Row="0" Height="50">
-                        <Label Content="{Binding SelectedCard.Fio}" Padding="0" Margin="5,0,5,0" FontWeight="Bold"></Label>
+                    <Viewbox Grid.Row="0" Height="40">
+                        <TextBox Text="{Binding SelectedCard.Fio, UpdateSourceTrigger=LostFocus}" IsReadOnly="{Binding NotIsEditing}" Background="#c9f3ff" TextAlignment="Center" MinWidth="100" Padding="0" Margin="5,0,5,0" FontWeight="Bold"></TextBox>
                     </Viewbox>
 
                     <Grid Grid.Row="1">
@@ -145,7 +145,7 @@
                         <Label Padding="0" Grid.Row="5" FontSize="15">Тип местности:</Label>
                         <Label Padding="0" Grid.Row="6" FontSize="15">Паспортные данные:</Label>
 
-                        <TextBox Text="{Binding SelectedCard.DateReg}" Grid.Column="1" Grid.Row="0" Background="#c9f3ff" FontSize="20" IsEnabled="{Binding IsEditing}"></TextBox>
+                        <TextBox Text="{Binding SelectedCard.DateReg, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="0" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}"></TextBox>
 
                         <ComboBox SelectedIndex="{Binding SelectedCard.Sex}" Grid.Column="1" Grid.Row="1" Background="#c9f3ff" FontSize="20" IsEnabled="{Binding IsEditing}" Visibility="Visible" BorderBrush="#FFC9F3FF">
                             <ComboBoxItem>
@@ -155,9 +155,9 @@
                                 Мужской
                             </ComboBoxItem>
                         </ComboBox>
-                        <TextBox Text="{Binding SelectedCard.BirthDay}" Grid.Column="1" Grid.Row="2" Background="#c9f3ff" FontSize="20" IsEnabled="{Binding IsEditing}"></TextBox>
-                        <TextBox Text="{Binding SelectedCard.Address}" Grid.Column="1" Grid.Row="3" Background="#c9f3ff" FontSize="20" IsEnabled="{Binding IsEditing}" TextWrapping="Wrap"></TextBox>
-                        <TextBox Text="{Binding SelectedCard.Phone}" Grid.Column="1" Grid.Row="4" Background="#c9f3ff" FontSize="20" IsEnabled="{Binding IsEditing}"></TextBox>
+                        <TextBox Text="{Binding SelectedCard.BirthDay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="2" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}"></TextBox>
+                        <TextBox Text="{Binding SelectedCard.Address, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="3" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}" TextWrapping="Wrap"></TextBox>
+                        <TextBox Text="{Binding SelectedCard.Phone, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="4" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}"></TextBox>
                         <ComboBox SelectedIndex="{Binding SelectedCard.CountryType}" Grid.Column="1" Grid.Row="5" Background="#c9f3ff" FontSize="20" IsEnabled="{Binding IsEditing}" Visibility="Visible" BorderBrush="#FFC9F3FF">
                             <ComboBoxItem>
                                 Городская
@@ -167,7 +167,7 @@
                             </ComboBoxItem>
                         </ComboBox>
 
-                        <TextBox Text="{Binding SelectedCard.Passport}" Grid.Column="1" Grid.Row="6" Background="#c9f3ff" FontSize="20" IsEnabled="{Binding IsEditing}" TextWrapping="Wrap"></TextBox>
+                        <TextBox Text="{Binding SelectedCard.Passport, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="6" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}" TextWrapping="Wrap"></TextBox>
 
                     </Grid>
 

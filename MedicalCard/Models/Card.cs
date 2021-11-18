@@ -6,14 +6,14 @@ namespace MedicalCard.Models
     public class Card : INotifyPropertyChanged
     {
         private int? _id;
-        private string? _fio;
+        private string? _fio = "";
         private int? _sex = 0;
-        private string? _birthDay;
-        private string? _address;
-        private string? _phone;
+        private string? _birthDay = "";
+        private string? _address = "";
+        private string? _phone = "";
         private int? _countryType = 0;
-        private string? _passport;
-        private string? _dateReg;
+        private string? _passport = "";
+        private string? _dateReg = "";
 
         public int? Id
         {
@@ -112,6 +112,19 @@ namespace MedicalCard.Models
                 _dateReg = value;
                 OnPropetryChanged(nameof(DateReg));
             }
+        }
+
+        public void Notify()
+        {
+            OnPropetryChanged(nameof(DateReg));
+            OnPropetryChanged(nameof(Passport));
+            OnPropetryChanged(nameof(CountryType));
+            OnPropetryChanged(nameof(Phone));
+            OnPropetryChanged(nameof(Address));
+            OnPropetryChanged(nameof(BirthDay));
+            OnPropetryChanged(nameof(Sex));
+            OnPropetryChanged(nameof(Fio));
+            OnPropetryChanged(nameof(Id));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

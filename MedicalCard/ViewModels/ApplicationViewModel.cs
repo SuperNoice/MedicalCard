@@ -16,67 +16,64 @@ using MedicalCard.Animations;
 using System.Windows.Threading;
 using System.Threading;
 using MedicalCard.Commands;
+using MedicalCard.Validations;
 
 namespace MedicalCard.ViewModels
 {
     public class ApplicationViewModel : INotifyPropertyChanged
     {
-        private ApplicationContext db;
+        private ApplicationContext _db;
         private GridAnimationManager _savingMenuAnimation;
         private GridAnimationManager _cardMenuAnimation;
-        private bool _isCreatingCard;
+        private bool _isAdding;
+        private bool _isUpdating;
 
-        public ObservableCollection<Card> Cards { get; set; }
+        private ObservableCollection<Card>? _cards;
+        public ObservableCollection<Card>? Cards
+        {
+            get => _cards;
+            set
+            {
+                _cards = value;
+                OnPropetryChanged(nameof(Cards));
+            }
+        }
 
         public ApplicationViewModel()
         {
             _cardMenuWidth = new GridLengthContainer(0.0, GridUnitType.Star);
             _saveMenuHeight = new GridLengthContainer(0.0, GridUnitType.Pixel);
 
-            _savingMenuAnimation = new GridAnimationManager(this, _saveMenuHeight, nameof(SaveMenuHeight), 0, 60, 100, 120);
-            _cardMenuAnimation = new GridAnimationManager(this, _cardMenuWidth, nameof(CardMenuWidth), 0.0, 0.3, 100, 120);
+            _savingMenuAnimation = new GridAnimationManager(this, _saveMenuHeight, nameof(SaveMenuHeight), 0, 60, 100, 100);
+            _cardMenuAnimation = new GridAnimationManager(this, _cardMenuWidth, nameof(CardMenuWidth), 0.0, 0.3, 100, 100);
 
-            _editing = false;
-            _isCreatingCard = false;
+            _isEditing = false;
+            _isAdding = false;
+            _isUpdating = false;
 
-            db = new ApplicationContext();
+            _db = new ApplicationContext();
 
-            db.Cards?.Load();
-            //Cards = db.Cards?.Local.ToObservableCollection() ?? new ObservableCollection<Card>();
-            Cards = new ObservableCollection<Card>();
-
-            Cards.Add(new Card()
-            {
-                Fio = "Лозовик Леонид Евгеньевич",
-                Phone = "+7(999)632-68-75",
-                BirthDay = "14.02.2001",
-                Passport = "1720 814484 Зарегестрирован в Мвд россии по республике адыгея"
-            });
-            Cards.Add(new Card()
-            {
-                Fio = "YaЛозовик Леонид Евгеньевич",
-                Phone = "+7(999)632-68-75",
-                BirthDay = "14.02.2001",
-                Passport = "1720 814484 Зарегестрирован в Мвд россии по республике адыгея"
-            });
-
+            _db.Cards?.Load();
+            Cards = _db.Cards?.Local.ToObservableCollection() ?? new ObservableCollection<Card>();
         }
 
-        private Card _selectedCard;
-        public Card SelectedCard
+        private Card? _selectedCard;
+        public Card? SelectedCard
         {
             get => _selectedCard;
 
             set
             {
                 _selectedCard = value;
-                Task.Factory.StartNew(() =>
+                if (!_isUpdating)
                 {
-                    _cardMenuAnimation.Close();
-                    OnPropetryChanged(nameof(SelectedCard));
-                    _cardMenuAnimation.Open();
-                });
-
+                    Task.Factory.StartNew(() =>
+                    {
+                        _cardMenuAnimation.Close();
+                        OnPropetryChanged(nameof(SelectedCard));
+                        _cardMenuAnimation.Open();
+                    });
+                }
             }
         }
 
@@ -102,16 +99,16 @@ namespace MedicalCard.ViewModels
             }
         }
 
-        private bool _editing;
+        private bool _isEditing;
         public bool IsEditing
         {
-            get => _editing;
+            get => _isEditing;
             set
             {
-                _editing = value;
+                _isEditing = value;
                 Task.Factory.StartNew(() =>
                 {
-                    if (_editing == true)
+                    if (_isEditing == true)
                     {
                         _savingMenuAnimation.Open();
                     }
@@ -128,7 +125,7 @@ namespace MedicalCard.ViewModels
 
         public bool NotIsEditing
         {
-            get => !_editing;
+            get => !_isEditing;
         }
 
         private RelayCommand _updCommand;
@@ -139,6 +136,20 @@ namespace MedicalCard.ViewModels
                 return _updCommand ??
                     (_updCommand = new RelayCommand(obj =>
                     {
+                        _isUpdating = true;
+                        _db.Cards?.Load();
+                        Cards = new ObservableCollection<Card>();
+                        foreach (Card item in _db.Cards.Local.Reverse())
+                        {
+                            _cards?.Add(item);
+                        }
+                        OnPropetryChanged(nameof(Cards));
+                        _selectedCard = null;
+                        Task.Factory.StartNew(() =>
+                        {
+                            _cardMenuAnimation.Close();
+                            _isUpdating = false;
+                        });
 
                     }));
             }
@@ -165,7 +176,9 @@ namespace MedicalCard.ViewModels
                 return _addCommand ??
                     (_addCommand = new RelayCommand(obj =>
                     {
-
+                        _isAdding = true;
+                        IsEditing = true;
+                        SelectedCard = new Card();
                     }));
             }
         }
@@ -191,7 +204,43 @@ namespace MedicalCard.ViewModels
                 return _deleteCommand ??
                     (_deleteCommand = new RelayCommand(obj =>
                     {
-
+                        MessageBoxResult dialogResult = MessageBox.Show($"Удалить запись: {SelectedCard?.Fio}\nВы уверены?", "Удалить запись", MessageBoxButton.YesNo);
+                        if (_isAdding)
+                        {
+                            if (dialogResult == MessageBoxResult.Yes)
+                            {
+                                CancelCommand.Execute(0);
+                            }
+                        }
+                        else
+                        {
+                            if (dialogResult == MessageBoxResult.Yes)
+                            {
+                                try
+                                {
+                                    _db.Cards?.Remove(SelectedCard);
+                                    _db.SaveChanges();
+                                    _isUpdating = true;
+                                    Cards?.Remove(SelectedCard);
+                                    _isUpdating = false;
+                                    _selectedCard = null;
+                                    Task.Factory.StartNew(() =>
+                                    {
+                                        _savingMenuAnimation.Close();
+                                    });
+                                    Task.Factory.StartNew(() =>
+                                    {
+                                        _cardMenuAnimation.Close();
+                                        IsEditing = false;
+                                    });
+                                }
+                                catch (Exception e)
+                                {
+                                    MessageBox.Show($"Ошибка добавления в БД. Error:{e.Message}");
+                                    return;
+                                }
+                            }
+                        }
                     }));
             }
         }
@@ -204,7 +253,51 @@ namespace MedicalCard.ViewModels
                 return _saveCommand ??
                     (_saveCommand = new RelayCommand(obj =>
                     {
+                        CardValidateStatus[] validateStatuses = CardValidation.Validate(SelectedCard);
+                        if (validateStatuses[0] == CardValidateStatus.OK)
+                        {
+                            try
+                            {
+                                CardNormalize.Normalize(SelectedCard);
 
+                                if (_isAdding)
+                                {
+                                    _db.Cards?.Add(SelectedCard);
+                                    _db.SaveChanges();
+                                    Cards?.Insert(0, SelectedCard);
+                                    OnPropetryChanged(nameof(Cards));
+                                    _isAdding = false;
+                                }
+                                else if (_isEditing)
+                                {
+                                    _db.Cards?.Update(SelectedCard);
+                                    _db.SaveChanges();
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show($"Ошибка добавления в БД. Error:{e.Message}");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            StringBuilder stringBuilder = new StringBuilder();
+                            foreach (CardValidateStatus status in validateStatuses)
+                            {
+                                stringBuilder.Append($"{status}, ");
+                            }
+                            string fields = stringBuilder.ToString();
+                            fields = fields.Substring(0, fields.Length - 2);
+                            MessageBox.Show($"Найдены ошибки в полях: {fields}!");
+                            return;
+                        }
+
+                        Task.Factory.StartNew(() =>
+                        {
+                            _savingMenuAnimation.Close();
+                            IsEditing = false;
+                        });
                     }));
             }
         }
@@ -217,6 +310,46 @@ namespace MedicalCard.ViewModels
                 return _cancelCommand ??
                     (_cancelCommand = new RelayCommand(obj =>
                     {
+                        if (_isAdding)
+                        {
+                            _selectedCard = null;
+                            _isAdding = false;
+                            Task.Factory.StartNew(() =>
+                            {
+                                _cardMenuAnimation.Close();
+                                IsEditing = false;
+                            });
+                            Task.Factory.StartNew(() =>
+                            {
+                                _savingMenuAnimation.Close();
+                            });
+                        }
+                        else if (_isEditing)
+                        {
+                            // Откат изменений
+                            foreach (var entry in _db.ChangeTracker.Entries())
+                            {
+                                switch (entry.State)
+                                {
+                                    case EntityState.Modified:
+                                        entry.State = EntityState.Unchanged;
+                                        break;
+                                    case EntityState.Deleted:
+                                        entry.Reload();
+                                        break;
+                                    case EntityState.Added:
+                                        entry.State = EntityState.Detached;
+                                        break;
+                                }
+                            }
+                            SelectedCard?.Notify();
+                            Task.Factory.StartNew(() =>
+                            {
+                                _savingMenuAnimation.Close();
+                                IsEditing = false;
+                            });
+                        }
+
 
                     }));
             }
