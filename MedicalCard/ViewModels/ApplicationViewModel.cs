@@ -18,6 +18,8 @@ using System.Threading;
 using MedicalCard.Commands;
 using MedicalCard.Validations;
 using MedicalCard.Extensions;
+using System.IO;
+using System.Globalization;
 
 namespace MedicalCard.ViewModels
 {
@@ -42,6 +44,9 @@ namespace MedicalCard.ViewModels
 
         public ApplicationViewModel()
         {
+            CheckDB();
+            BackupDB();
+
             _cardMenuWidth = new GridLengthContainer(0.0, GridUnitType.Star);
             _saveMenuHeight = new GridLengthContainer(0.0, GridUnitType.Pixel);
 
@@ -55,6 +60,47 @@ namespace MedicalCard.ViewModels
             _db = new ApplicationContext();
 
             UpdateCommand.Execute(0);
+        }
+
+        private void CheckDB()
+        {
+            if (File.Exists("./medical.db"))
+            {
+                return;
+            }
+            if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db")))
+            {
+                File.Copy(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"), "./medical.db", true);
+                return;
+            }
+            MessageBox.Show("Ошибка! Файл medical.db не найден! Программа будет закрыта!", "Ошибка!");
+            Environment.Exit(0);
+        }
+
+        private void BackupDB()
+        {
+            if (File.Exists("./lastbackup.txt"))
+            {
+                string text = File.ReadAllText("./lastbackup.txt");
+                DateTime scheduleDate;
+                if (DateTime.TryParseExact(text.Trim(), "dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate))
+                {
+                    if (scheduleDate.Day == DateTime.Now.Day && scheduleDate.Month == DateTime.Now.Month && scheduleDate.Year == DateTime.Now.Year)
+                    {
+                        return;
+                    }
+                }
+            }
+            try
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup"));
+                File.Copy("./medical.db", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"), true);
+                File.WriteAllText("./lastbackup.txt", DateTime.Now.ToString("dd.MM.yyyy"));
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Ошибка бекапа базы данных!");
+            }
         }
 
         private Card? _selectedCard;
@@ -159,7 +205,8 @@ namespace MedicalCard.ViewModels
                 return _printCommand ??
                     (_printCommand = new RelayCommand(obj =>
                     {
-
+                        PrintWindow printWindow = new PrintWindow(_selectedCard);
+                        printWindow.ShowDialog();
                     }));
             }
         }
