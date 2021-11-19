@@ -22,11 +22,11 @@ namespace MedicalCard.Validations
             card.BirthDay = DateNormalize(card.BirthDay);
             card.Address = card.Address.Trim();
             card.Phone = PhoneNormalize(card.Phone);
-            card.Passport = card.Passport.Trim();
+            card.Passport = PassportNormalize(card.Passport);
             card.DateReg = DateNormalize(card.DateReg);
         }
 
-        private static string FioNormalize(string fio)
+        public static string FioNormalize(string fio)
         {
             var arr = fio.Trim().Split(" ");
             StringBuilder result = new StringBuilder();
@@ -37,10 +37,10 @@ namespace MedicalCard.Validations
                 result.Append(" ");
             }
 
-            return result.ToString();
+            return result.ToString().Trim();
         }
 
-        private static string PhoneNormalize(string phone)
+        public static string PhoneNormalize(string phone)
         {
             StringBuilder stringBuilder = new StringBuilder();
             foreach (char ch in phone)
@@ -50,7 +50,7 @@ namespace MedicalCard.Validations
                     stringBuilder.Append(ch);
                 }
             }
-            string numbers = stringBuilder.ToString();
+            string numbers = stringBuilder.ToString().Trim();
             if (numbers[0] == '8')
             {
                 numbers = "7" + numbers.Substring(1);
@@ -59,12 +59,54 @@ namespace MedicalCard.Validations
             return $"+{numbers[0]}({numbers.Substring(1, 3)}){numbers.Substring(4, 3)}-{numbers.Substring(7, 2)}-{numbers.Substring(9, 2)}";
         }
 
-        private static string DateNormalize(string date)
+        public static string DateNormalize(string date)
         {
             DateTime scheduleDate;
             DateTime.TryParseExact(date.Trim(), new string[] { "dd.MM.yyyy", "d.M.yyyy" }, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate);
 
             return scheduleDate.ToString("dd.MM.yyyy");
+        }
+
+        public static string PassportNormalize(string passport)
+        {
+            StringBuilder nomStringBuilder = new StringBuilder();
+            string secondPart = "";
+            int count = 0;
+
+            for (int index = 0; index < passport.Length; ++index)
+            {
+                if (Char.IsDigit(passport[index]))
+                {
+                    if (count == 4)
+                    {
+                        nomStringBuilder.Append(" ");
+                    }
+                    ++count;
+                    nomStringBuilder.Append(passport[index]);
+                }
+                if (Char.IsLetter(passport[index]))
+                {
+                    secondPart = passport.Substring(index);
+                    break;
+                }
+            }
+
+            if (secondPart.Length == 0)
+            {
+                return nomStringBuilder.ToString();
+            }
+
+            StringBuilder secondPartStringBuilder = new StringBuilder();
+            foreach (string item in secondPart.Split(" "))
+            {
+                secondPartStringBuilder.Append(item);
+                secondPartStringBuilder.Append(" ");
+            }
+
+            nomStringBuilder.Append(" ");
+            nomStringBuilder.Append(secondPartStringBuilder.ToString().Trim());
+
+            return nomStringBuilder.ToString().Trim();
         }
     }
 }

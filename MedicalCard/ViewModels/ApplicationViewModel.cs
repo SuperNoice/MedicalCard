@@ -17,6 +17,7 @@ using System.Windows.Threading;
 using System.Threading;
 using MedicalCard.Commands;
 using MedicalCard.Validations;
+using MedicalCard.Extensions;
 
 namespace MedicalCard.ViewModels
 {
@@ -53,8 +54,7 @@ namespace MedicalCard.ViewModels
 
             _db = new ApplicationContext();
 
-            _db.Cards?.Load();
-            Cards = _db.Cards?.Local.ToObservableCollection() ?? new ObservableCollection<Card>();
+            UpdateCommand.Execute(0);
         }
 
         private Card? _selectedCard;
@@ -138,11 +138,7 @@ namespace MedicalCard.ViewModels
                     {
                         _isUpdating = true;
                         _db.Cards?.Load();
-                        Cards = new ObservableCollection<Card>();
-                        foreach (Card item in _db.Cards.Local.Reverse())
-                        {
-                            _cards?.Add(item);
-                        }
+                        Cards = new ObservableCollection<Card>(_db.Cards?.Local.Reverse());
                         OnPropetryChanged(nameof(Cards));
                         _selectedCard = null;
                         Task.Factory.StartNew(() =>
@@ -150,7 +146,7 @@ namespace MedicalCard.ViewModels
                             _cardMenuAnimation.Close();
                             _isUpdating = false;
                         });
-
+                        SearchText = "";
                     }));
             }
         }
@@ -353,6 +349,70 @@ namespace MedicalCard.ViewModels
 
                     }));
             }
+        }
+
+        public void CloseCardMenu()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                _cardMenuAnimation.Close();
+                _isUpdating = true;
+                _selectedCard = null;
+                _isUpdating = false;
+            });
+        }
+
+        private string _searchText = "";
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropetryChanged(nameof(SearchText));
+            }
+        }
+
+        public void FilterCards()
+        {
+            if (_searchText.Trim().Length == 0)
+            {
+                UpdateCommand.Execute(0);
+                return;
+            }
+
+            IEnumerable<Card> sorted;
+
+            if (CardValidation.CheckDate(_searchText))
+            {
+                SearchText = CardNormalize.DateNormalize(_searchText);
+                sorted = from card in _cards
+                         orderby card.BirthDay?.DiceCoefficient(_searchText) descending
+                         select card;
+            }
+            else if (CardValidation.CheckPhone(_searchText))
+            {
+                SearchText = CardNormalize.PhoneNormalize(_searchText);
+                sorted = from card in _cards
+                         orderby card.Phone?.DiceCoefficient(_searchText) descending
+                         select card;
+            }
+            else if (CardValidation.CheckPassport(_searchText))
+            {
+                SearchText = CardNormalize.PassportNormalize(_searchText);
+                sorted = from card in _cards
+                         orderby card.Passport?.DiceCoefficient(_searchText) descending
+                         select card;
+            }
+            else
+            {
+                SearchText = CardNormalize.FioNormalize(_searchText);
+                sorted = from card in _cards
+                         orderby card.Fio?.DiceCoefficient(_searchText) descending
+                         select card;
+            }
+
+            Cards = new ObservableCollection<Card>(sorted);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

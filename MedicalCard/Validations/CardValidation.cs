@@ -40,7 +40,7 @@ namespace MedicalCard.Validations
             {
                 result.Add(CardValidateStatus.Телефон);
             }
-            if (card.Passport.Trim().Length == 0)
+            if (!CheckPassport(card.Passport.Trim()))
             {
                 result.Add(CardValidateStatus.Паспортные_Данные);
             }
@@ -52,21 +52,26 @@ namespace MedicalCard.Validations
 
             return result.ToArray();
         }
-        private static bool CheckFio(string value)
+        public static bool CheckFio(string value)
         {
             var s = value.Trim().Split(" ");
             return (s.Length == 2) || (s.Length == 3);
         }
 
-        private static bool CheckDate(string value)
+        public static bool CheckDate(string value)
         {
             DateTime scheduleDate;
             return DateTime.TryParseExact(value.Trim(), new string[] { "dd.MM.yyyy", "d.M.yyyy" }, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate);
         }
 
-        private static bool CheckPhone(string value)
+        public static bool CheckPhone(string value)
         {
-            return Regex.IsMatch(value, @"^\+?\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d");
+            return Regex.IsMatch(value.Trim(), @"^\+?\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d");
+        }
+
+        public static bool CheckPassport(string value)
+        {
+            return Regex.IsMatch(value.Trim(), @"^\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*$");
         }
     }
 }

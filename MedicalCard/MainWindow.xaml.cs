@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using MedicalCard.ViewModels;
 using Xceed.Wpf.Toolkit;
+using MedicalCard.Extensions;
 
 namespace MedicalCard
 {
@@ -24,11 +25,26 @@ namespace MedicalCard
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ApplicationViewModel _viewModel;
         public MainWindow()
         {
             InitializeComponent();
-            
-            DataContext = new ApplicationViewModel();
+
+            _viewModel = new ApplicationViewModel();
+            DataContext = _viewModel;
+        }
+
+        private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _viewModel.CloseCardMenu();
+        }
+
+        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                _viewModel.FilterCards();
+            }
         }
     }
 }
