@@ -28,7 +28,7 @@ namespace MedicalCard.Validations
 
         public static string FioNormalize(string fio)
         {
-            var arr = fio.Trim().Split(" ");
+            var arr = fio.Trim().Split(' ');
             StringBuilder result = new StringBuilder();
             foreach (var item in arr)
             {
@@ -97,7 +97,7 @@ namespace MedicalCard.Validations
             }
 
             StringBuilder secondPartStringBuilder = new StringBuilder();
-            foreach (string item in secondPart.Split(" "))
+            foreach (string item in secondPart.Split(' '))
             {
                 secondPartStringBuilder.Append(item);
                 secondPartStringBuilder.Append(" ");

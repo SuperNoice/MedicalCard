@@ -5,17 +5,17 @@ namespace MedicalCard.Models
 {
     public class Card : INotifyPropertyChanged
     {
-        private int? _id;
-        private string? _fio = "";
-        private int? _sex = 0;
-        private string? _birthDay = "";
-        private string? _address = "";
-        private string? _phone = "";
-        private int? _countryType = 0;
-        private string? _passport = "";
-        private string? _dateReg = "";
+        private int _id;
+        private string _fio = "";
+        private int _sex = 0;
+        private string _birthDay = "";
+        private string _address = "";
+        private string _phone = "";
+        private int _countryType = 0;
+        private string _passport = "";
+        private string _dateReg = "";
 
-        public int? Id
+        public int Id
         {
             get => _id;
 
@@ -26,7 +26,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public string? Fio
+        public string Fio
         {
             get => _fio;
 
@@ -37,7 +37,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public int? Sex
+        public int Sex
         {
             get => _sex;
 
@@ -48,7 +48,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public string? BirthDay
+        public string BirthDay
         {
             get => _birthDay;
 
@@ -59,7 +59,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public string? Address
+        public string Address
         {
             get => _address;
 
@@ -70,7 +70,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public string? Phone
+        public string Phone
         {
             get => _phone;
 
@@ -81,7 +81,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public int? CountryType
+        public int CountryType
         {
             get => _countryType;
 
@@ -92,7 +92,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public string? Passport
+        public string Passport
         {
             get => _passport;
 
@@ -103,7 +103,7 @@ namespace MedicalCard.Models
             }
         }
 
-        public string? DateReg
+        public string DateReg
         {
             get => _dateReg;
 
@@ -127,7 +127,7 @@ namespace MedicalCard.Models
             OnPropetryChanged(nameof(Id));
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropetryChanged([CallerMemberName] string prop = "")
         {

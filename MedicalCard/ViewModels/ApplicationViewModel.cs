@@ -9,8 +9,6 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Sqlite;
 using MedicalCard.Models;
 using MedicalCard.Animations;
 using System.Windows.Threading;
@@ -18,6 +16,7 @@ using System.Threading;
 using MedicalCard.Commands;
 using MedicalCard.Validations;
 using MedicalCard.Extensions;
+using System.Data.Entity;
 using System.IO;
 using System.Globalization;
 
@@ -31,8 +30,8 @@ namespace MedicalCard.ViewModels
         private bool _isAdding;
         private bool _isUpdating;
 
-        private ObservableCollection<Card>? _cards;
-        public ObservableCollection<Card>? Cards
+        private ObservableCollection<Card> _cards;
+        public ObservableCollection<Card> Cards
         {
             get => _cards;
             set
@@ -58,7 +57,6 @@ namespace MedicalCard.ViewModels
             _isUpdating = false;
 
             _db = new ApplicationContext();
-
             UpdateCommand.Execute(0);
         }
 
@@ -103,8 +101,8 @@ namespace MedicalCard.ViewModels
             }
         }
 
-        private Card? _selectedCard;
-        public Card? SelectedCard
+        private Card _selectedCard;
+        public Card SelectedCard
         {
             get => _selectedCard;
 
@@ -313,7 +311,8 @@ namespace MedicalCard.ViewModels
                                 }
                                 else if (_isEditing)
                                 {
-                                    _db.Cards?.Update(SelectedCard);
+                                    //_db.Cards.Update(SelectedCard);
+                                    _db.Entry(SelectedCard).State = EntityState.Modified;
                                     _db.SaveChanges();
                                 }
                             }
@@ -462,7 +461,7 @@ namespace MedicalCard.ViewModels
             Cards = new ObservableCollection<Card>(sorted);
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropetryChanged([CallerMemberName] string prop = "")
         {

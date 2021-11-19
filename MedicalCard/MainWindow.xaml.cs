@@ -12,10 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Sqlite;
 using MedicalCard.ViewModels;
-using Xceed.Wpf.Toolkit;
 using MedicalCard.Extensions;
 
 namespace MedicalCard

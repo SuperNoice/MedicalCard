@@ -54,7 +54,7 @@ namespace MedicalCard.Validations
         }
         public static bool CheckFio(string value)
         {
-            var s = value.Trim().Split(" ");
+            var s = value.Trim().Split(' ');
             return (s.Length == 2) || (s.Length == 3);
         }
 
