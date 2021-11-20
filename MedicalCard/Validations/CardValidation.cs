@@ -61,7 +61,7 @@ namespace MedicalCard.Validations
         public static bool CheckDate(string value)
         {
             DateTime scheduleDate;
-            return DateTime.TryParseExact(value.Trim(), new string[] { "dd.MM.yyyy", "d.M.yyyy" }, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate);
+            return DateTime.TryParseExact(value.Trim(), new string[] { "dd.MM.yyyy", "d.M.yyyy", "dd,MM,yyyy", "d,M,yyyy" }, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate);
         }
 
         public static bool CheckPhone(string value)

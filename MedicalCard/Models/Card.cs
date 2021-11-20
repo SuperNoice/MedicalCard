@@ -3,15 +3,24 @@ using System.Runtime.CompilerServices;
 
 namespace MedicalCard.Models
 {
+    enum Sex
+    {
+        Жен, Муж
+    }
+
+    enum CountryType
+    {
+        Гор, Сел
+    }
     public class Card : INotifyPropertyChanged
     {
         private int _id;
         private string _fio = "";
-        private int _sex = 0;
+        private Sex _sex = Models.Sex.Жен;
         private string _birthDay = "";
         private string _address = "";
         private string _phone = "";
-        private int _countryType = 0;
+        private CountryType _countryType = Models.CountryType.Гор;
         private string _passport = "";
         private string _dateReg = "";
 
@@ -39,11 +48,11 @@ namespace MedicalCard.Models
 
         public int Sex
         {
-            get => _sex;
+            get => (int)_sex;
 
             set
             {
-                _sex = value;
+                _sex = (Sex)value;
                 OnPropetryChanged(nameof(Sex));
             }
         }
@@ -83,11 +92,11 @@ namespace MedicalCard.Models
 
         public int CountryType
         {
-            get => _countryType;
+            get => (int)_countryType;
 
             set
             {
-                _countryType = value;
+                _countryType = (CountryType)value;
                 OnPropetryChanged(nameof(CountryType));
             }
         }

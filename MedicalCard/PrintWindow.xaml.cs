@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,9 +30,22 @@ namespace MedicalCard
             InitializeComponent();
 
             _selectedCard = card;
-            _printViewModel = new PrintViewModel();
+            _printViewModel = new PrintViewModel(_selectedCard);
             
             DataContext = _printViewModel;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_printViewModel.IsPrinting)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            
         }
     }
 }

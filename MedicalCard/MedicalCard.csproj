@@ -5,6 +5,7 @@
     <TargetFramework>net46</TargetFramework>
     <UseWPF>true</UseWPF>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ApplicationIcon>medical-checkup.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,10 @@
     <None Remove="Images\Logo.png" />
     <None Remove="Images\PrintIcon.png" />
     <None Remove="Images\ReloadIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="medical-checkup.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +39,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="medical.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="templates\readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

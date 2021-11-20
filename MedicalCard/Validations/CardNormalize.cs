@@ -62,7 +62,7 @@ namespace MedicalCard.Validations
         public static string DateNormalize(string date)
         {
             DateTime scheduleDate;
-            DateTime.TryParseExact(date.Trim(), new string[] { "dd.MM.yyyy", "d.M.yyyy" }, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate);
+            DateTime.TryParseExact(date.Trim(), new string[] { "dd.MM.yyyy", "d.M.yyyy", "dd,MM,yyyy", "d,M,yyyy" }, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate);
 
             return scheduleDate.ToString("dd.MM.yyyy");
         }
