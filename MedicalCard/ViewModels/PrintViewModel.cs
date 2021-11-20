@@ -1,21 +1,18 @@
 ﻿using MedicalCard.Commands;
+using MedicalCard.Models;
+using Spire.Doc;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing.Printing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using Spire.Doc;
-using System.Windows.Forms;
-using System.Collections.ObjectModel;
-using MedicalCard.Models;
 using System.Text.RegularExpressions;
-using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace MedicalCard.ViewModels
 {
@@ -155,7 +152,7 @@ namespace MedicalCard.ViewModels
                                         _document.PrintDialog = _printDialog;
                                         _printDocument = _document.PrintDocument;
                                     }
-                                    
+
 
                                 }
                             }

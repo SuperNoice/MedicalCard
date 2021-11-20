@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MedicalCard" xmlns:viewmodels="clr-namespace:MedicalCard.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:PrintViewModel}"
         mc:Ignorable="d"
-        Title="Печать документов" Height="450" Width="600" MinWidth="570"  WindowStartupLocation="CenterScreen" Closing="Window_Closing" Closed="Window_Closed">
+        Title="Печать документов" Height="450" Width="600" MinWidth="570"  WindowStartupLocation="CenterScreen" Closing="Window_Closing">
 
     <Grid>
         <Grid.RowDefinitions>

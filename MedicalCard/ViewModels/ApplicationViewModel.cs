@@ -1,24 +1,20 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Data;
+﻿using MedicalCard.Animations;
+using MedicalCard.Commands;
+using MedicalCard.Extensions;
+using MedicalCard.Models;
+using MedicalCard.Validations;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Data.Entity;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel;
-using System.Windows.Controls;
-using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
-using MedicalCard.Models;
-using MedicalCard.Animations;
-using System.Windows.Threading;
-using System.Threading;
-using MedicalCard.Commands;
-using MedicalCard.Validations;
-using MedicalCard.Extensions;
-using System.Data.Entity;
-using System.IO;
-using System.Globalization;
+using System.Windows;
 
 namespace MedicalCard.ViewModels
 {
