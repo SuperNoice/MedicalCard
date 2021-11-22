@@ -3,10 +3,191 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MedicalCard"
+        xmlns:local="clr-namespace:MedicalCard.Models"
+        xmlns:viewmodels="clr-namespace:MedicalCard.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:ApplicationViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="База пациентов" MinHeight="150" MinWidth="900" Height="600" Width="1200" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Image x:Key="EditIcon" Source="Images/EditIcon.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Image x:Key="AddIcon" Source="Images/AddIcon.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Image x:Key="Logo" Source="Images/Logo.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Image x:Key="ReloadIcon" Source="Images/ReloadIcon.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Image x:Key="PrintIcon" Source="Images/PrintIcon.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Image x:Key="DeleteIcon" Source="Images/DeleteIcon.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+    </Window.Resources>
+
+    <Grid ShowGridLines="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.7*">
+            </ColumnDefinition>
+            <ColumnDefinition x:Name="CardMenuColumn" Width="{Binding CardMenuWidth}"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Column="0" IsEnabled="{Binding NotIsEditing}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="50"></ColumnDefinition>
+                    <ColumnDefinition Width="50"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.Column="0" Source="Images/Logo.png" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <TextBox x:Name="SearchTextBox" Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeyDown="SearchTextBox_KeyDown" GotFocus="SearchTextBox_GotFocus" Grid.Column="1" Margin="10, 10, 10, 10" FontSize="18" >
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                            <Style.Resources>
+                                <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                    <VisualBrush.Visual>
+                                        <Label Content="Поиск" Foreground="LightGray" />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Style.Resources>
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                </Trigger>
+                                <Trigger Property="Text" Value="{x:Null}">
+                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter Property="Background" Value="White" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <Button Grid.Column="2" Command="{Binding AddCommand}" IsEnabled="{Binding NotIsEditing}" Margin="10, 10, 10, 10" Padding="0" Content="{StaticResource AddIcon}" Background="#f0eeea"/>
+                <Button Grid.Column="3" Command="{Binding UpdateCommand}" IsEnabled="{Binding NotIsEditing}" Margin="10, 10, 10, 10" Padding="0" Content="{StaticResource ReloadIcon}" Background="#f0eeea"/>
+
+            </Grid>
+
+            <ListView  Grid.Row="1" ItemsSource="{Binding Cards}" SelectedItem="{Binding SelectedCard}" IsEnabled="{Binding NotIsEditing}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="FontSize" Value="16pt"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=Fio}" Width="Auto">ФИО</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=Phone}" Width="Auto">Телефон</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=BirthDay}" Width="Auto">Дата рождения</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=Passport}" Width="Auto">Паспортные данные</GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+
+        </Grid>
+
+        <Grid Grid.Column="1" Background="#c9f3ff">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="0.15*"></RowDefinition>
+                <RowDefinition x:Name="SavingCardMenu" Height="{Binding SaveMenuHeight}"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Command="{Binding DeleteCommand}" Content="{StaticResource DeleteIcon}" HorizontalAlignment="Right" Margin="10, 10, 10, 10" VerticalAlignment="Stretch" Width="30" Background="#f0eeea"/>
+                <Button Command="{Binding EditCommand}" Content="{StaticResource EditIcon}" IsEnabled="{Binding NotIsEditing}" HorizontalAlignment="Right" Margin="10, 10, 10, 10" VerticalAlignment="Stretch" Width="30" Background="#f0eeea"/>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" Margin="10,0,0,10">
+                <Grid Margin="0,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.2*"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Viewbox Grid.Row="0" Height="40">
+                        <TextBox Text="{Binding SelectedCard.Fio, UpdateSourceTrigger=LostFocus}" IsReadOnly="{Binding NotIsEditing}" Background="#c9f3ff" TextAlignment="Center" MinWidth="100" Padding="0" Margin="5,0,5,0" FontWeight="Bold"></TextBox>
+                    </Viewbox>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Padding="0" Grid.Row="0" FontSize="15">Дата регистрации:</Label>
+                        <Label Padding="0" Grid.Row="1" FontSize="15">Пол:</Label>
+                        <Label Padding="0" Grid.Row="2" FontSize="15">Дата рождения:</Label>
+                        <Label Padding="0" Grid.Row="3" FontSize="15">Место регистрации:</Label>
+                        <Label Padding="0" Grid.Row="4" FontSize="15">Телефон:</Label>
+                        <Label Padding="0" Grid.Row="5" FontSize="15">Тип местности:</Label>
+                        <Label Padding="0" Grid.Row="6" FontSize="15">Паспортные данные:</Label>
+
+                        <TextBox Text="{Binding SelectedCard.DateReg, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="0" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}"></TextBox>
+
+                        <ComboBox SelectedIndex="{Binding SelectedCard.Sex}" Grid.Column="1" Grid.Row="1" Background="#c9f3ff" FontSize="20" IsEnabled="{Binding IsEditing}" Visibility="Visible" BorderBrush="#FFC9F3FF">
+                            <ComboBoxItem>
+                                Женский
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                Мужской
+                            </ComboBoxItem>
+                        </ComboBox>
+                        <TextBox Text="{Binding SelectedCard.BirthDay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="2" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}"></TextBox>
+                        <TextBox Text="{Binding SelectedCard.Address, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="3" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}" TextWrapping="Wrap"></TextBox>
+                        <TextBox Text="{Binding SelectedCard.Phone, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="4" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}"></TextBox>
+                        <ComboBox SelectedIndex="{Binding SelectedCard.CountryType}" Grid.Column="1" Grid.Row="5" Background="#c9f3ff" FontSize="20" IsEnabled="{Binding IsEditing}" Visibility="Visible" BorderBrush="#FFC9F3FF">
+                            <ComboBoxItem>
+                                Городская
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                Сельская
+                            </ComboBoxItem>
+                        </ComboBox>
+
+                        <TextBox Text="{Binding SelectedCard.Passport, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="6" Background="#c9f3ff" FontSize="20" IsReadOnly="{Binding NotIsEditing}" TextWrapping="Wrap"></TextBox>
+
+                    </Grid>
+
+                </Grid>
+            </ScrollViewer>
+
+            <Button Grid.Row="2" Command="{Binding PrintCommand}" Content="{StaticResource PrintIcon}" IsEnabled="{Binding NotIsEditing}" Margin="0,0,0,20" Background="#f0eeea" HorizontalAlignment="Center"></Button>
+            
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Command="{Binding SaveCommand}" IsEnabled="{Binding IsEditing}" Content="Сохранить" FontSize="18" Background="#9be092"/>
+
+                <Button Grid.Column="1" Command="{Binding CancelCommand}" IsEnabled="{Binding IsEditing}" Content="Отмена" FontSize="18" Background="#e85b5b"/>
+
+            </Grid>
+        </Grid>
 
     </Grid>
 </Window>

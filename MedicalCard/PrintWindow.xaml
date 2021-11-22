@@ -1,0 +1,48 @@
+﻿<Window x:Class="MedicalCard.PrintWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MedicalCard" xmlns:viewmodels="clr-namespace:MedicalCard.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:PrintViewModel}"
+        mc:Ignorable="d"
+        Title="Печать документов" Height="450" Width="600" MinWidth="570"  WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <ListView Grid.Row="0" ItemsSource="{Binding TemplateNames}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Шаблонный файл" Width="350">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=FileName}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Вывести на печать">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Path=IsActive}" HorizontalAlignment="Center"></CheckBox>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Viewbox Grid.Row="1" Margin="0,10,0,10" MaxHeight="50" Visibility="Visible">
+            <Button x:Name="bt" Command="{Binding PrintCommand}" Visibility="{Binding ButtonVisability}" Content="Печать" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#f0eeea"></Button>
+        </Viewbox>
+        
+        <Viewbox Grid.Row="1" Margin="0,10,0,10" MaxHeight="50">
+            <ProgressBar Visibility="{Binding ProgressBarVisability}" Value="{Binding ProgressBarValue}" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#555555" Orientation="Horizontal"></ProgressBar>
+        </Viewbox>
+        
+        <Button Grid.Row="1" Command="{Binding CancelCommand}" Visibility="{Binding ProgressBarVisability}" Content="Отмена" Width="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FFFF3737"></Button>
+        
+    </Grid>
+</Window>

@@ -5,7 +5,7 @@
 
 using System.Linq;
 
-namespace WpfApp1.Extensions
+namespace MedicalCard.Extensions
 {
     public static class DiceCoefficientExtensions
     {
