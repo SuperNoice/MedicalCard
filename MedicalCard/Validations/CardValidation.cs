@@ -68,7 +68,7 @@ namespace MedicalCard.Validations
 
         public static bool CheckPassport(string value)
         {
-            return Regex.IsMatch(value.Trim(), @"^\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*$");
+            return Regex.IsMatch(value.Trim(), @"^\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d\D*\d(\s.*)?$");
         }
     }
 }

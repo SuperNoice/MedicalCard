@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -40,7 +41,6 @@ namespace MedicalCard.ViewModels
         public ApplicationViewModel()
         {
             CheckDB();
-            BackupDB();
 
             _cardMenuWidth = new GridLengthContainer(0.0, GridUnitType.Star);
             _saveMenuHeight = new GridLengthContainer(0.0, GridUnitType.Pixel);
@@ -56,44 +56,113 @@ namespace MedicalCard.ViewModels
             UpdateCommand.Execute(0);
         }
 
-        private void CheckDB()
+        public void CheckDB()
         {
             if (File.Exists("./medical.db"))
             {
-                return;
-            }
-            if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db")))
-            {
-                File.Copy(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"), "./medical.db", true);
-                return;
-            }
-            MessageBox.Show("Ошибка! Файл medical.db не найден! Программа будет закрыта!", "Ошибка!");
-            Environment.Exit(0);
-        }
-
-        private void BackupDB()
-        {
-            if (File.Exists("./lastbackup.txt"))
-            {
-                string text = File.ReadAllText("./lastbackup.txt");
-                DateTime scheduleDate;
-                if (DateTime.TryParseExact(text.Trim(), "dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate))
+                if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db")))
                 {
-                    if (scheduleDate.Day == DateTime.Now.Day && scheduleDate.Month == DateTime.Now.Month && scheduleDate.Year == DateTime.Now.Year)
+                    string backupHash = ComputeMD5Checksum(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"));
+                    string dbHash = ComputeMD5Checksum("./medical.db");
+                    if (backupHash != dbHash)
                     {
+                        ReplaceDBFromBackup();
+                        WriteDbHash();
                         return;
                     }
                 }
+                if (File.Exists("./lastDbHash.txt"))
+                {
+                    if (CheckDbHash())
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        ReplaceDBFromBackup();
+                        WriteDbHash();
+                        return;
+                    }
+                }
+                else
+                {
+                    ReplaceDBFromBackup();
+                    WriteDbHash();
+                    return;
+                }
+            }
+            else
+            {
+                if (ReplaceDBFromBackup())
+                {
+                    WriteDbHash();
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка! Файл medical.db не найден! Программа будет закрыта!", "Ошибка!");
+                    Environment.Exit(0);
+                }
+            }
+        }
+
+        public bool BackupDB()
+        {
+            if (CheckDbHash())
+            {
+                return true;
             }
             try
             {
+                WriteDbHash();
                 Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup"));
                 File.Copy("./medical.db", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"), true);
-                File.WriteAllText("./lastbackup.txt", DateTime.Now.ToString("dd.MM.yyyy"));
+                return true;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString(), "Ошибка бекапа базы данных!");
+                return false;
+            }
+        }
+
+        private string ComputeMD5Checksum(string path)
+        {
+            using (FileStream fs = System.IO.File.OpenRead(path))
+            {
+                MD5 md5 = new MD5CryptoServiceProvider();
+                byte[] fileData = new byte[fs.Length];
+                fs.Read(fileData, 0, (int)fs.Length);
+                byte[] checkSum = md5.ComputeHash(fileData);
+                string result = BitConverter.ToString(checkSum).Replace("-", string.Empty);
+
+                return result;
+            }
+        }
+
+        private void WriteDbHash()
+        {
+            File.WriteAllText("./lastDbHash.txt", ComputeMD5Checksum("./medical.db").Trim());
+        }
+
+        private bool CheckDbHash()
+        {
+            string dbHash = ComputeMD5Checksum("./medical.db").Trim();
+            string lastHash = File.ReadAllText("./lastDbHash.txt").Trim();
+
+            return dbHash == lastHash;
+        }
+
+        private bool ReplaceDBFromBackup()
+        {
+            try
+            {
+                File.Copy(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"), "./medical.db", true);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 

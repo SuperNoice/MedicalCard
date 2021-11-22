@@ -7,7 +7,7 @@
         xmlns:viewmodels="clr-namespace:MedicalCard.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:ApplicationViewModel}"
         mc:Ignorable="d"
-        Title="База пациентов" MinHeight="150" MinWidth="900" Height="600" Width="1200" WindowStartupLocation="CenterScreen">
+        Title="База пациентов" MinHeight="150" MinWidth="900" Height="600" Width="1200" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
     <Window.Resources>
         <Image x:Key="EditIcon" Source="Images/EditIcon.png" RenderOptions.BitmapScalingMode="HighQuality"/>
         <Image x:Key="AddIcon" Source="Images/AddIcon.png" RenderOptions.BitmapScalingMode="HighQuality"/>
