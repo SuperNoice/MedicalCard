@@ -30,5 +30,10 @@ namespace MedicalCard
                 _viewModel.FilterCards();
             }
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _viewModel.BackupDB();
+        }
     }
 }
