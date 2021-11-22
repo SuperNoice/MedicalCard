@@ -142,7 +142,9 @@ namespace MedicalCard.ViewModels
                                 {
                                     try
                                     {
-
+                                        _document = new Document();
+                                        _document.PrintDialog = _printDialog;
+                                        _printDocument = _document.PrintDocument;
                                         _document.LoadFromFile(template.FilePath, FileFormat.Docx);
                                         ReplaceInDoc();
                                         // TODO: Здесь падает NullReferenceExeption
@@ -150,12 +152,13 @@ namespace MedicalCard.ViewModels
                                         _document.Close();
                                         ProgressBarValue += progressBarStep;
                                     }
+                                    catch (NullReferenceException)
+                                    {
+                                        System.Windows.MessageBox.Show($"Не удалось прочитать файл: {template.FileName}\n\nУдалите все закладки! (Word -> Вставка -> Ссылки -> Закладка)", "Ошибка чтения файла!");
+                                    }
                                     catch (Exception e)
                                     {
                                         System.Windows.MessageBox.Show($"Не удалось прочитать файл: {template.FileName}\n\n{e.Message}", "Ошибка чтения файла!");
-                                        _document = new Document();
-                                        _document.PrintDialog = _printDialog;
-                                        _printDocument = _document.PrintDocument;
                                     }
 
 
