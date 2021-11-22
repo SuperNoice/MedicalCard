@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -23,7 +24,7 @@ namespace MedicalCard.Models
         private string _phone = "";
         private CountryType _countryType = Models.CountryType.Гор;
         private string _passport = "";
-        private string _dateReg = "";
+        private string _dateReg = DateTime.Now.ToString("dd.MM.yyyy");
 
         public int Id
         {
