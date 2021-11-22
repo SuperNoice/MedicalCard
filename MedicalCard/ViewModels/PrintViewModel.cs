@@ -54,6 +54,11 @@ namespace MedicalCard.ViewModels
             {
                 _templateNames.Add(new DocTemplate(filePath));
             }
+
+            var sorted = from name in _templateNames
+                         orderby name.FileName
+                         select name;
+            _templateNames = new ObservableCollection<DocTemplate>(sorted);
         }
 
         private ObservableCollection<DocTemplate> _templateNames;
@@ -145,9 +150,9 @@ namespace MedicalCard.ViewModels
                                         _document.Close();
                                         ProgressBarValue += progressBarStep;
                                     }
-                                    catch (Exception)
+                                    catch (Exception e)
                                     {
-                                        System.Windows.MessageBox.Show($"Не удалось прочитать файл: {template.FileName}\n\nВозможно в документе есть неподдерживающиеся закладки(Bookmarks)", "Ошибка чтения файла!");
+                                        System.Windows.MessageBox.Show($"Не удалось прочитать файл: {template.FileName}\n\n{e.Message}", "Ошибка чтения файла!");
                                         _document = new Document();
                                         _document.PrintDialog = _printDialog;
                                         _printDocument = _document.PrintDocument;
@@ -188,17 +193,25 @@ namespace MedicalCard.ViewModels
             DateTime.TryParseExact(_selectedCard.DateReg, new string[] { "dd.MM.yyyy", "d.M.yyyy" }, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out regDate);
 
             _document.Replace(new Regex(@"{fio}"), _selectedCard.Fio);
+            _document.Replace(new Regex(@"{shortfio}"), _selectedCard.GetShortFIO());
             _document.Replace(new Regex(@"{sex}"), _selectedCard.Sex.ToString());
             _document.Replace(new Regex(@"{birthDay}"), _selectedCard.BirthDay);
             _document.Replace(new Regex(@"{address}"), _selectedCard.Address);
             _document.Replace(new Regex(@"{phone}"), _selectedCard.Phone);
             _document.Replace(new Regex(@"{countryType}"), _selectedCard.CountryType.ToString());
             _document.Replace(new Regex(@"{passport}"), _selectedCard.Passport);
-            _document.Replace(new Regex(@"{nowd}"), DateTime.Now.ToString("d"));
-            _document.Replace(new Regex(@"{nowM}"), DateTime.Now.ToString("M"));
+            _document.Replace(new Regex(@"{nowd}"), DateTime.Now.Day.ToString());
+            _document.Replace(new Regex(@"{nowM}"), DateTime.Now.Month.ToString());
             _document.Replace(new Regex(@"{nowMMMM}"), DateTime.Now.ToString("MMMM"));
             _document.Replace(new Regex(@"{nowyear}"), DateTime.Now.ToString("yyyy"));
+            _document.Replace(new Regex(@"{Bd}"), birthDay.Day.ToString());
+            _document.Replace(new Regex(@"{BM}"), birthDay.Month.ToString());
+            _document.Replace(new Regex(@"{BMMMM}"), birthDay.ToString("MMMM"));
+            _document.Replace(new Regex(@"{Byear}"), birthDay.ToString("yyyy"));
+
         }
+
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

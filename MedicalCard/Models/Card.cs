@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace MedicalCard.Models
 {
@@ -134,6 +135,20 @@ namespace MedicalCard.Models
             OnPropetryChanged(nameof(Sex));
             OnPropetryChanged(nameof(Fio));
             OnPropetryChanged(nameof(Id));
+        }
+
+        public string GetShortFIO()
+        {
+            StringBuilder res = new StringBuilder();
+            string[] splitedFio = Fio.Split(' ');
+            res.Append($"{splitedFio[0]} ");
+            res.Append($"{splitedFio[1][0]}. ");
+            if (splitedFio.Length == 3)
+            {
+                res.Append($"{splitedFio[2][0]}.");
+            }
+
+            return res.ToString().Trim();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
