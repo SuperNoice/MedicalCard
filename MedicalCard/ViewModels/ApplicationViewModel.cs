@@ -21,11 +21,12 @@ namespace MedicalCard.ViewModels
 {
     public class ApplicationViewModel : INotifyPropertyChanged
     {
-        private ApplicationContext _db;
+        private DB _db;
         private GridAnimationManager _savingMenuAnimation;
         private GridAnimationManager _cardMenuAnimation;
         private bool _isAdding;
         private bool _isUpdating;
+        private Card _tmpCard;
 
         private ObservableCollection<Card> _cards;
         public ObservableCollection<Card> Cards
@@ -40,7 +41,7 @@ namespace MedicalCard.ViewModels
 
         public ApplicationViewModel()
         {
-            CheckDB();
+            //CheckDB();
 
             _cardMenuWidth = new GridLengthContainer(0.0, GridUnitType.Star);
             _saveMenuHeight = new GridLengthContainer(0.0, GridUnitType.Pixel);
@@ -52,7 +53,7 @@ namespace MedicalCard.ViewModels
             _isAdding = false;
             _isUpdating = false;
 
-            _db = new ApplicationContext();
+            _db = DB.GetInstance();
             UpdateCommand.Execute(0);
         }
 
@@ -246,8 +247,7 @@ namespace MedicalCard.ViewModels
                     (_updCommand = new RelayCommand(obj =>
                     {
                         _isUpdating = true;
-                        _db.Cards?.Load();
-                        Cards = new ObservableCollection<Card>(_db.Cards?.Local.Reverse());
+                        Cards = DB.GetInstance().GetAll();
                         OnPropetryChanged(nameof(Cards));
                         _selectedCard = null;
                         Task.Factory.StartNew(() =>
@@ -298,6 +298,7 @@ namespace MedicalCard.ViewModels
                     (_editCommand = new RelayCommand(obj =>
                     {
                         IsEditing = true;
+                        _tmpCard = SelectedCard.Clone();
                     }));
             }
         }
@@ -324,8 +325,7 @@ namespace MedicalCard.ViewModels
                             {
                                 try
                                 {
-                                    _db.Cards?.Remove(SelectedCard);
-                                    _db.SaveChanges();
+                                    _db.Del(SelectedCard);
                                     _isUpdating = true;
                                     Cards?.Remove(SelectedCard);
                                     _isUpdating = false;
@@ -368,17 +368,15 @@ namespace MedicalCard.ViewModels
 
                                 if (_isAdding)
                                 {
-                                    _db.Cards?.Add(SelectedCard);
-                                    _db.SaveChanges();
-                                    Cards?.Insert(0, SelectedCard);
-                                    OnPropetryChanged(nameof(Cards));
+                                    _db.Add(SelectedCard);
+                                    UpdateCommand.Execute(0);
                                     _isAdding = false;
                                 }
                                 else if (_isEditing)
                                 {
-                                    //_db.Cards.Update(SelectedCard);
-                                    _db.Entry(SelectedCard).State = EntityState.Modified;
-                                    _db.SaveChanges();
+                                    _db.Upd(SelectedCard);
+                                    UpdateCommand.Execute(0);
+                                    IsEditing = false;
                                 }
                             }
                             catch (Exception e)
@@ -399,6 +397,8 @@ namespace MedicalCard.ViewModels
                             MessageBox.Show($"Найдены ошибки в полях: {fields}!");
                             return;
                         }
+
+                        OnPropetryChanged(nameof(Cards));
 
                         Task.Factory.StartNew(() =>
                         {
@@ -421,6 +421,7 @@ namespace MedicalCard.ViewModels
                         {
                             _selectedCard = null;
                             _isAdding = false;
+
                             Task.Factory.StartNew(() =>
                             {
                                 _cardMenuAnimation.Close();
@@ -433,31 +434,19 @@ namespace MedicalCard.ViewModels
                         }
                         else if (_isEditing)
                         {
-                            // Откат изменений
-                            foreach (var entry in _db.ChangeTracker.Entries())
+                            _selectedCard = null;
+
+                            Task.Factory.StartNew(() =>
                             {
-                                switch (entry.State)
-                                {
-                                    case EntityState.Modified:
-                                        entry.State = EntityState.Unchanged;
-                                        break;
-                                    case EntityState.Deleted:
-                                        entry.Reload();
-                                        break;
-                                    case EntityState.Added:
-                                        entry.State = EntityState.Detached;
-                                        break;
-                                }
-                            }
-                            SelectedCard?.Notify();
+                                _cardMenuAnimation.Close();
+                                IsEditing = false;
+                            });
                             Task.Factory.StartNew(() =>
                             {
                                 _savingMenuAnimation.Close();
-                                IsEditing = false;
                             });
                         }
-
-
+                        UpdateCommand.Execute(0);
                     }));
             }
         }
