@@ -26,7 +26,6 @@ namespace MedicalCard.ViewModels
         private GridAnimationManager _cardMenuAnimation;
         private bool _isAdding;
         private bool _isUpdating;
-        private Card _tmpCard;
 
         private ObservableCollection<Card> _cards;
         public ObservableCollection<Card> Cards
@@ -54,6 +53,7 @@ namespace MedicalCard.ViewModels
             _isUpdating = false;
 
             _db = DB.GetInstance();
+
             UpdateCommand.Execute(0);
         }
 
@@ -171,7 +171,6 @@ namespace MedicalCard.ViewModels
         public Card SelectedCard
         {
             get => _selectedCard;
-
             set
             {
                 _selectedCard = value;
@@ -298,7 +297,6 @@ namespace MedicalCard.ViewModels
                     (_editCommand = new RelayCommand(obj =>
                     {
                         IsEditing = true;
-                        _tmpCard = SelectedCard.Clone();
                     }));
             }
         }
