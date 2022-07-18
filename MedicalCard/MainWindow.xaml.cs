@@ -1,4 +1,5 @@
-﻿using MedicalCard.ViewModels;
+﻿using MedicalCard.Models;
+using MedicalCard.ViewModels;
 using System.Windows;
 using System.Windows.Input;
 
@@ -16,6 +17,8 @@ namespace MedicalCard
 
             _viewModel = new ApplicationViewModel();
             DataContext = _viewModel;
+
+            Log.Write("Приложение запущено");
         }
 
         private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -33,7 +36,16 @@ namespace MedicalCard
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _viewModel.BackupDB();
+            DB.GetInstance().Dispose();
+            try
+            {
+                _viewModel.BackupDB();
+            }
+            catch (System.Exception exep)
+            {
+                Log.Write(exep.Message);
+            }
+            Log.Write("Приложение закрыто");
         }
     }
 }

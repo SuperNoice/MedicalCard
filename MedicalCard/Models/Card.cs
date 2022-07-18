@@ -5,12 +5,12 @@ using System.Text;
 
 namespace MedicalCard.Models
 {
-    enum Sex
+    public enum Sex
     {
         Жен, Муж
     }
 
-    enum CountryType
+    public enum CountryType
     {
         Гор, Сел
     }
@@ -25,6 +25,26 @@ namespace MedicalCard.Models
         private CountryType _countryType = Models.CountryType.Гор;
         private string _passport = "";
         private string _dateReg = DateTime.Now.ToString("dd.MM.yyyy");
+
+        public Card() { }
+
+        public Card(int id, string fio, Sex sex, string birthDay, string address, string phone, CountryType countryType, string passport, string dateReg)
+        {
+            _id = id;
+            _fio = fio;
+            _sex = sex;
+            _birthDay = birthDay;
+            _address = address;
+            _phone = phone;
+            _countryType = countryType;
+            _passport = passport;
+            _dateReg = dateReg;
+        }
+
+        public Card Clone()
+        {
+            return new Card(Id, Fio, _sex, BirthDay, Address, Phone, _countryType, Passport, DateReg);
+        }
 
         public int Id
         {

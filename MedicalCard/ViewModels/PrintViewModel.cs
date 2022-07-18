@@ -52,7 +52,10 @@ namespace MedicalCard.ViewModels
             _templates = Directory.GetFiles("./templates", "*.doc");
             foreach (string filePath in _templates)
             {
-                _templateNames.Add(new DocTemplate(filePath));
+                if (!Regex.IsMatch(filePath, @"\[\d\]") || Regex.IsMatch(filePath, @"\[1\]"))
+                {
+                    _templateNames.Add(new DocTemplate(filePath));
+                }
             }
 
             var sorted = from name in _templateNames
@@ -138,29 +141,38 @@ namespace MedicalCard.ViewModels
                                 {
                                     break;
                                 }
+
                                 if (template.IsActive)
                                 {
-                                    try
-                                    {
-                                        _document = new Document();
-                                        _document.PrintDialog = _printDialog;
-                                        _printDocument = _document.PrintDocument;
-                                        _document.LoadFromFile(template.FilePath, FileFormat.Docx);
-                                        ReplaceInDoc();
-                                        // TODO: Здесь падает NullReferenceExeption
-                                        _printDocument.Print();
-                                        _document.Close();
-                                        ProgressBarValue += progressBarStep;
-                                    }
-                                    catch (NullReferenceException)
-                                    {
-                                        System.Windows.MessageBox.Show($"Не удалось прочитать файл: {template.FileName}\n\nУдалите все закладки! (Word -> Вставка -> Ссылки -> Закладка)", "Ошибка чтения файла!");
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        System.Windows.MessageBox.Show($"Не удалось прочитать файл: {template.FileName}\n\n{e.Message}", "Ошибка чтения файла!");
-                                    }
+                                    var docs = Directory.GetFiles("./templates", $"{Path.GetFileNameWithoutExtension(template.FilePath)}*");
 
+                                    var sorted = (from name in docs
+                                                  orderby name
+                                                  select name).ToArray();
+
+                                    foreach (var doc in sorted)
+                                    {
+                                        try
+                                        {
+                                            _document = new Document();
+                                            _document.PrintDialog = _printDialog;
+                                            _printDocument = _document.PrintDocument;
+                                            _document.LoadFromFile(doc, FileFormat.Docx);
+                                            ReplaceInDoc();
+                                            // TODO: Здесь падает NullReferenceExeption
+                                            _printDocument.Print();
+                                            _document.Close();
+                                            ProgressBarValue += progressBarStep;
+                                        }
+                                        catch (NullReferenceException)
+                                        {
+                                            System.Windows.MessageBox.Show($"Не удалось прочитать файл: {template.FileName}\n\nУдалите все закладки! (Word -> Вставка -> Ссылки -> Закладка)", "Ошибка чтения файла!");
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            System.Windows.MessageBox.Show($"Не удалось прочитать файл: {template.FileName}\n\n{e.Message}", "Ошибка чтения файла!");
+                                        }
+                                    }
 
                                 }
                             }
