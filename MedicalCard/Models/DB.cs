@@ -11,13 +11,15 @@ namespace MedicalCard.Models
 {
     public class DB
     {
-        private string _dbPath = "./medical.db";
+        private string _workingDir = System.Windows.Forms.Application.StartupPath;
+        private string _dbPath;
         private SQLiteConnection _connection;
         private SQLiteCommand _command;
         private static DB _instance;
 
         private DB()
         {
+            _dbPath = $@"{_workingDir}\medical.db";
             _connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;");
             _command = _connection.CreateCommand();
         }

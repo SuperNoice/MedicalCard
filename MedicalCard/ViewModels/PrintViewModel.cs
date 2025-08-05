@@ -23,6 +23,7 @@ namespace MedicalCard.ViewModels
         private PrintDocument _printDocument;
         private string[] _templates;
         private Card _selectedCard;
+        private string _workingDir;
 
         public bool IsPrinting
         {
@@ -32,6 +33,7 @@ namespace MedicalCard.ViewModels
 
         public PrintViewModel(Card card)
         {
+            _workingDir = System.Windows.Forms.Application.StartupPath;
             IsPrinting = false;
             ProgressBarVisability = Visibility.Collapsed;
             ButtonVisability = Visibility.Visible;
@@ -48,8 +50,8 @@ namespace MedicalCard.ViewModels
 
             _templateNames = new ObservableCollection<DocTemplate>();
 
-            Directory.CreateDirectory("./templates");
-            _templates = Directory.GetFiles("./templates", "*.doc");
+            Directory.CreateDirectory($@"{_workingDir}\templates");
+            _templates = Directory.GetFiles($@"{_workingDir}\templates", "*.doc");
             foreach (string filePath in _templates)
             {
                 if (!Regex.IsMatch(filePath, @"\[\d\]") || Regex.IsMatch(filePath, @"\[1\]"))
@@ -144,7 +146,8 @@ namespace MedicalCard.ViewModels
 
                                 if (template.IsActive)
                                 {
-                                    var docs = Directory.GetFiles("./templates", $"{Path.GetFileNameWithoutExtension(template.FilePath)}*");
+                                    
+                                    var docs = Directory.GetFiles($@"{_workingDir}\templates", $"{Path.GetFileNameWithoutExtension(template.FilePath)}*");
 
                                     var sorted = (from name in docs
                                                   orderby name
@@ -159,7 +162,7 @@ namespace MedicalCard.ViewModels
                                             _printDocument = _document.PrintDocument;
                                             _document.LoadFromFile(doc, FileFormat.Docx);
                                             ReplaceInDoc();
-                                            // TODO: Здесь падает NullReferenceExeption
+                                            // TODO: Здесь падает NullReferenceException
                                             _printDocument.Print();
                                             _document.Close();
                                             ProgressBarValue += progressBarStep;
@@ -171,6 +174,7 @@ namespace MedicalCard.ViewModels
                                         catch (Exception e)
                                         {
                                             System.Windows.MessageBox.Show($"Не удалось прочитать файл: {template.FileName}\n\n{e.Message}", "Ошибка чтения файла!");
+                                            Log.Write(e.ToString());
                                         }
                                     }
 

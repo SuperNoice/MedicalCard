@@ -21,6 +21,7 @@ namespace MedicalCard.ViewModels
 {
     public class ApplicationViewModel : INotifyPropertyChanged
     {
+        private string _workingDir = System.Windows.Forms.Application.StartupPath;
         private DB _db;
         private GridAnimationManager _savingMenuAnimation;
         private GridAnimationManager _cardMenuAnimation;
@@ -59,12 +60,12 @@ namespace MedicalCard.ViewModels
 
         public void CheckDB()
         {
-            if (File.Exists("./medical.db"))
+            if (File.Exists($@"{_workingDir}\medical.db"))
             {
                 if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db")))
                 {
                     string backupHash = ComputeMD5Checksum(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"));
-                    string dbHash = ComputeMD5Checksum("./medical.db");
+                    string dbHash = ComputeMD5Checksum($@"{_workingDir}\medical.db");
                     if (backupHash != dbHash)
                     {
                         ReplaceDBFromBackup();
@@ -72,7 +73,7 @@ namespace MedicalCard.ViewModels
                         return;
                     }
                 }
-                if (File.Exists("./lastDbHash.txt"))
+                if (File.Exists($@"{_workingDir}\lastDbHash.txt"))
                 {
                     if (CheckDbHash())
                     {
@@ -117,7 +118,7 @@ namespace MedicalCard.ViewModels
             {
                 WriteDbHash();
                 Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup"));
-                File.Copy("./medical.db", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"), true);
+                File.Copy($@"{_workingDir}\medical.db", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"), true);
                 return true;
             }
             catch (Exception e)
@@ -143,13 +144,13 @@ namespace MedicalCard.ViewModels
 
         private void WriteDbHash()
         {
-            File.WriteAllText("./lastDbHash.txt", ComputeMD5Checksum("./medical.db").Trim());
+            File.WriteAllText($@"{_workingDir}\lastDbHash.txt", ComputeMD5Checksum($@"{_workingDir}\medical.db").Trim());
         }
 
         private bool CheckDbHash()
         {
-            string dbHash = ComputeMD5Checksum("./medical.db").Trim();
-            string lastHash = File.ReadAllText("./lastDbHash.txt").Trim();
+            string dbHash = ComputeMD5Checksum($@"{_workingDir}\medical.db").Trim();
+            string lastHash = File.ReadAllText($@"{_workingDir}\lastDbHash.txt").Trim();
 
             return dbHash == lastHash;
         }
@@ -158,7 +159,7 @@ namespace MedicalCard.ViewModels
         {
             try
             {
-                File.Copy(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"), "./medical.db", true);
+                File.Copy(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MedicalCardBackup", "medical.db"), $@"{_workingDir}\medical.db", true);
                 return true;
             }
             catch (Exception)
